@@ -13,7 +13,15 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 // mongoose.connect("mongodb://localhost:27017/todolistDB", {useNewUrlParser: true});  //for locally host your db 
-mongoose.connect("mongodb+srv://arbazmalik1920:arbaz@123@cluster0.wu2wz.mongodb.net/todolistDB", {useNewUrlParser: true});  //host our db to mongo cloud
+// mongoose.connect("mongodb+srv://arbazmalik1920:arbaz@123@cluster0.wu2wz.mongodb.net/todolistDB", {useNewUrlParser: true});  //host our db to mongo cloud
+
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/todolistDB';
+mongoose.connect(dbUrl, {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false
+});
 
 const itemsSchema = {
   name: String
@@ -53,7 +61,7 @@ app.get("/", function(req, res) {
         if (err) {
           console.log(err);
         } else {
-          console.log("Successfully savevd default items to DB.");
+          console.log("Successfully saved default items to DB.");
         }
       });
       res.redirect("/");  //bcz hm if statement k baad else p aayenge to founditems(bcz founditem upr specify kra h mene) m items nhi honge 
@@ -137,11 +145,8 @@ app.get("/about", function(req, res){
   res.render("about");
 });
 
-let port = process.env.PORT;
-if (port == null || port == "") {
-  port = 3000;
-}
 
-app.listen(port, function() {
-  console.log("Server has started succesfully");
-});
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Serving on port ${port}`)
+})
